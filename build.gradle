@@ -1,21 +1,12 @@
-buildscript {
-    repositories { mavenCentral() }
-    dependencies { classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.5.22.RELEASE' }
-}
-
 plugins {
+    id 'org.springframework.boot' version '2.5.2'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
     id 'idea'
     id 'eclipse'
 }
 
-apply plugin: 'org.springframework.boot'
-
-
-jar {
-    baseName = 'ng-boot'
-    version = '0.0.1-SNAPSHOT'
-}
+version = '0.0.1-SNAPSHOT'
 
 sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
@@ -27,10 +18,34 @@ dependencies {
             'org.springframework.boot:spring-boot-starter-actuator',
             'org.springframework.boot:spring-boot-devtools',
             'org.projectlombok:lombok'
-    testCompile 'org.springframework.boot:spring-boot-starter-test'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('org.junit.vintage:junit-vintage-engine') {
+        exclude group: 'org.hamcrest', module: 'hamcrest-core'
+    }
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+        showStandardStreams = true
+    }
+
+    afterTest { desc, result ->
+        def output = "Class name: ${desc.className}, Test name: ${desc.name},  (Test status: ${result.resultType})"
+        println( '\n' + output)
+    }
+}
+
+jar {
+    archivesBaseName = 'ng-boot'
 }
 
 apply from: "$rootDir/client/build.gradle"
 
-build.dependsOn 'npm run build'
-build.shouldRunAfter 'npm run build'
+build {
+    dependsOn 'npm run build'
+    shouldRunAfter 'npm run build'
+}
