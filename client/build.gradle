@@ -1,13 +1,25 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 final File workDir = new File("$rootDir/client")
 
 task 'npm install'(type: Exec) {
   workingDir workDir
-  executable 'bash'
-  args '-c', 'npm install'
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    commandLine("cmd.exe", "/C", "npm.cmd install")
+  }
+  else {
+    executable 'bash'
+    args '-c', 'npm install'
+  }
 }
 
 task 'npm run build'(type: Exec, dependsOn: ['npm install']) {
   workingDir workDir
-  executable 'bash'
-  args '-c', 'npm run build'
+  if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+    commandLine("cmd.exe", "/C", "npm.cmd run build")
+  }
+  else {
+    executable 'bash'
+    args '-c', 'npm run build'
+  }
 }
