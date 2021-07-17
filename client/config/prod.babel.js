@@ -17,6 +17,7 @@ config.plugins = [
   ...config.plugins,
   new DedupePlugin(),
   new UglifyJsPlugin({
+    comments: false,
     mangle: {
       keep_fnames: true,
     },
